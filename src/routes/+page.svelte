@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Chat } from '@ai-sdk/svelte';
+	import { Message, MessageContent, MessageResponse } from '$lib/components/ai-elements/message';
 
 	let input = $state('');
 	const chat = new Chat({});
@@ -14,20 +15,20 @@
 <main>
 	<ul>
 		{#each chat.messages as message, messageIndex (messageIndex)}
-			<li>
-				<div>{message.role}</div>
-				<div>
-					{#each message.parts as part, partIndex (partIndex)}
-						{#if part.type === 'text'}
-							<div>{part.text}</div>
+			<Message from={message.role}>
+				<MessageContent>
+					{#each message.parts as msgPart, partIndex (partIndex)}
+						{#if msgPart.type === 'text'}
+							<MessageResponse content={msgPart.text} />
 						{/if}
 					{/each}
-				</div>
-			</li>
+				</MessageContent>
+			</Message>
 		{/each}
 	</ul>
-	<form onsubmit={handleSubmit}>
-		<input bind:value={input} />
+
+	<form onsubmit={handleSubmit} class="border p-2">
+		<input bind:value={input} class="border border-black" />
 		<button type="submit">Send</button>
 	</form>
 </main>
