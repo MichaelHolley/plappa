@@ -51,6 +51,7 @@
 		"@openrouter/ai-sdk-provider": "^2.8.0",
 		"@shikijs/themes": "^4.0.2",
 		"mode-watcher": "^1.1.0",
+		"runed": "^0.37.1",
 		"svelte-streamdown": "^3.0.1"
 	}
 }
