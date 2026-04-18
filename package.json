@@ -11,7 +11,10 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"db:push": "drizzle-kit push",
+		"db:migrate": "drizzle-kit migrate",
+		"db:generate": "drizzle-kit generate"
 	},
 	"devDependencies": {
 		"@ai-sdk/svelte": "^4.0.168",
@@ -25,6 +28,7 @@
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
 		"@tailwindcss/vite": "^4.2.2",
 		"@types/node": "^24",
+		"@types/pg": "^8.20.0",
 		"ai": "^6.0.168",
 		"bits-ui": "^2.16.3",
 		"clsx": "^2.1.1",
@@ -50,7 +54,10 @@
 	"dependencies": {
 		"@openrouter/ai-sdk-provider": "^2.8.0",
 		"@shikijs/themes": "^4.0.2",
+		"better-auth": "^1.6.5",
+		"drizzle-orm": "^0.45.2",
 		"mode-watcher": "^1.1.0",
+		"pg": "^8.20.0",
 		"runed": "^0.37.1",
 		"svelte-streamdown": "^3.0.1"
 	}
