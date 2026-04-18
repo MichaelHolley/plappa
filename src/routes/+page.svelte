@@ -30,7 +30,7 @@
 					<MessageContent>
 						{#each message.parts as msgPart, partIndex (partIndex)}
 							{#if msgPart.type === 'text'}
-								<MessageResponse content={msgPart.text} class="my-3" />
+								<MessageResponse content={msgPart.text} class="**:my-2" />
 							{/if}
 						{/each}
 					</MessageContent>
