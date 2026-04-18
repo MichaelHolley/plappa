@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import { Button } from '$lib/components/ui/button/';
 	import * as Card from '$lib/components/ui/card/';
 	import { Field, FieldDescription, FieldGroup, FieldLabel } from '$lib/components/ui/field/';
 	import { Input } from '$lib/components/ui/input/';
-	import { resolve } from '$app/paths';
-	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	const id = $props.id();
 
@@ -15,24 +16,33 @@
 	let error = $state('');
 	let loading = $state(false);
 
+	onMount(async () => {
+		await authClient.signOut();
+	});
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		loading = true;
 		error = '';
 
-		const res = await authClient.signIn.email({
-			email,
-			password,
-			callbackURL: '/'
-		});
+		const res = await authClient.signIn.email(
+			{
+				email,
+				password,
+				callbackURL: '/'
+			},
+			{
+				onSuccess: async () => {
+					goto(resolve('/'));
+				}
+			}
+		);
 
 		if (res.error) {
 			error = res.error.message ?? 'Login failed';
 			loading = false;
 			return;
 		}
-
-		goto(resolve('/'));
 	}
 </script>
 
