@@ -7,6 +7,7 @@
 
 	const id = $props.id();
 
+	let name = $state('');
 	let email = $state('');
 	let password = $state('');
 	let error = $state('');
@@ -17,14 +18,15 @@
 		loading = true;
 		error = '';
 
-		const { error: authError } = await authClient.signIn.email({
+		const { error: authError } = await authClient.signUp.email({
+			name,
 			email,
 			password,
 			callbackURL: '/'
 		});
 
 		if (authError) {
-			error = authError.message ?? 'Login failed';
+			error = authError.message ?? 'Sign up failed';
 			loading = false;
 			return;
 		}
@@ -33,12 +35,16 @@
 
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
-		<Card.Title class="text-2xl">Login</Card.Title>
-		<Card.Description>Enter your email below to login to your account</Card.Description>
+		<Card.Title class="text-2xl">Create account</Card.Title>
+		<Card.Description>Enter your details below to create your account</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form onsubmit={handleSubmit}>
 			<FieldGroup>
+				<Field>
+					<FieldLabel for="name-{id}">Name</FieldLabel>
+					<Input id="name-{id}" type="text" placeholder="Your name" bind:value={name} required />
+				</Field>
 				<Field>
 					<FieldLabel for="email-{id}">Email</FieldLabel>
 					<Input
@@ -50,9 +56,7 @@
 					/>
 				</Field>
 				<Field>
-					<div class="flex items-center">
-						<FieldLabel for="password-{id}">Password</FieldLabel>
-					</div>
+					<FieldLabel for="password-{id}">Password</FieldLabel>
 					<Input id="password-{id}" type="password" bind:value={password} required />
 				</Field>
 				{#if error}
@@ -60,10 +64,10 @@
 				{/if}
 				<Field>
 					<Button type="submit" class="w-full" disabled={loading}>
-						{loading ? 'Logging in…' : 'Login'}
+						{loading ? 'Creating account…' : 'Sign up'}
 					</Button>
 					<FieldDescription class="text-center">
-						Don't have an account? <a href="/signup" class="underline">Sign up</a>
+						Already have an account? <a href="/login" class="underline">Login</a>
 					</FieldDescription>
 				</Field>
 			</FieldGroup>
