@@ -4,6 +4,8 @@
 	import * as Card from '$lib/components/ui/card/';
 	import { Field, FieldDescription, FieldGroup, FieldLabel } from '$lib/components/ui/field/';
 	import { Input } from '$lib/components/ui/input/';
+	import { resolve } from '$app/paths';
+	import { goto } from '$app/navigation';
 
 	const id = $props.id();
 
@@ -18,18 +20,19 @@
 		loading = true;
 		error = '';
 
-		const { error: authError } = await authClient.signUp.email({
-			name,
+		const res = await authClient.signIn.email({
 			email,
 			password,
 			callbackURL: '/'
 		});
 
-		if (authError) {
-			error = authError.message ?? 'Sign up failed';
+		if (res.error) {
+			error = res.error.message ?? 'Login failed';
 			loading = false;
 			return;
 		}
+
+		goto(resolve('/'));
 	}
 </script>
 
@@ -67,7 +70,7 @@
 						{loading ? 'Creating account…' : 'Sign up'}
 					</Button>
 					<FieldDescription class="text-center">
-						Already have an account? <a href="/login" class="underline">Login</a>
+						Already have an account? <a href={resolve('/login')} class="underline">Login</a>
 					</FieldDescription>
 				</Field>
 			</FieldGroup>

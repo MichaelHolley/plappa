@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import { Button } from '$lib/components/ui/button/';
 	import * as Card from '$lib/components/ui/card/';
@@ -17,17 +19,19 @@
 		loading = true;
 		error = '';
 
-		const { error: authError } = await authClient.signIn.email({
+		const res = await authClient.signIn.email({
 			email,
 			password,
 			callbackURL: '/'
 		});
 
-		if (authError) {
-			error = authError.message ?? 'Login failed';
+		if (res.error) {
+			error = res.error.message ?? 'Login failed';
 			loading = false;
 			return;
 		}
+
+		goto(resolve('/'));
 	}
 </script>
 
@@ -63,7 +67,7 @@
 						{loading ? 'Logging in…' : 'Login'}
 					</Button>
 					<FieldDescription class="text-center">
-						Don't have an account? <a href="/signup" class="underline">Sign up</a>
+						Don't have an account? <a href={resolve('/signup')} class="underline">Sign up</a>
 					</FieldDescription>
 				</Field>
 			</FieldGroup>
