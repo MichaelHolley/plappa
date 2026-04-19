@@ -3,13 +3,13 @@
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import type { chat } from '$lib/types';
+	import type { ChatSummary } from '$lib/types';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 
 	const session = authClient.useSession();
 
-	let chats = $state<chat[]>([]);
+	let chats = $state<ChatSummary[]>([]);
 
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
 

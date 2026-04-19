@@ -1,8 +1,3 @@
-import * as z from 'zod';
+import type { Chat } from './chat-schema';
 
-export const chatSchema = z.object({
-	id: z.string(),
-	title: z.string()
-});
-
-export type chat = z.infer<typeof chatSchema>;
+export type ChatSummary = Pick<Chat, 'id' | 'title' | 'updatedAt' | 'targetLanguage'>;
