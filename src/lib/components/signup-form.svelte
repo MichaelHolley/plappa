@@ -20,8 +20,9 @@
 		loading = true;
 		error = '';
 
-		const res = await authClient.signIn.email(
+		const res = await authClient.signUp.email(
 			{
+				name,
 				email,
 				password,
 				callbackURL: '/'
