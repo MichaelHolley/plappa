@@ -26,7 +26,7 @@
 	}
 </script>
 
-<main class="mx-auto flex h-svh max-w-2xl flex-col space-y-3 p-2 pb-8">
+<div class="mx-auto flex h-full max-w-2xl flex-col space-y-3 p-2 pb-8">
 	<ChatContainerRoot class="flex-1 flex-col">
 		<ChatContainerContent class="space-y-4 pr-1">
 			{#each chat.messages as message (message.id)}
@@ -53,4 +53,4 @@
 			</PromptInput.Toolbar>
 		</PromptInput.Root>
 	</div>
-</main>
+</div>

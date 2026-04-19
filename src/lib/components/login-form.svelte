@@ -6,7 +6,6 @@
 	import * as Card from '$lib/components/ui/card/';
 	import { Field, FieldDescription, FieldGroup, FieldLabel } from '$lib/components/ui/field/';
 	import { Input } from '$lib/components/ui/input/';
-	import { onMount } from 'svelte';
 
 	const id = $props.id();
 
@@ -14,10 +13,6 @@
 	let password = $state('');
 	let error = $state('');
 	let loading = $state(false);
-
-	onMount(async () => {
-		await authClient.signOut();
-	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();

@@ -2,28 +2,28 @@
 	import {
 		setChatContainerContext,
 		type ResizeMode,
-		type InitialMode,
-	} from "./chat-container-context.svelte";
-	import { cn } from "$lib/utils";
-	import { watch } from "runed";
+		type InitialMode
+	} from './chat-container-context.svelte';
+	import { cn } from '$lib/utils';
+	import { watch } from 'runed';
 
 	let {
 		ref = $bindable<HTMLDivElement | null>(null),
 		children,
 		class: className,
-		resize = "smooth",
-		initial = "instant",
+		resize = 'smooth',
+		initial = 'instant',
 		...restProps
 	}: {
 		ref?: HTMLDivElement | null;
-		children?: import("svelte").Snippet;
+		children?: import('svelte').Snippet;
 		class?: string;
 		resize?: ResizeMode;
 		initial?: InitialMode;
 		[key: string]: any;
 	} = $props();
 
-	let context = setChatContainerContext("smooth", "instant");
+	let context = setChatContainerContext('smooth', 'instant');
 
 	watch(
 		() => ref,
@@ -47,6 +47,6 @@
 	);
 </script>
 
-<div bind:this={ref} class={cn("flex overflow-y-auto", className)} role="log" {...restProps}>
+<div bind:this={ref} class={cn('flex overflow-y-auto', className)} role="log" {...restProps}>
 	{@render children?.()}
 </div>
