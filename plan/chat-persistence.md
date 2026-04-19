@@ -41,35 +41,43 @@ Persist user chats in PostgreSQL via Drizzle ORM. Replace current `localStorage`
 - `auth.ts` re-uses same instance via `drizzleAdapter`.
 - Avoids double connection pool.
 
-## Phase 3 — Server endpoints (`src/routes/api/`)
+## Phase 3 — Server load functions + form actions
 
-- `POST /api/chats` — body `{ targetLanguage }`. Insert row with default title, empty messages, userId from session. Return `{ id }`.
-- `GET /api/chats` — list current user's non-archived chats: `id, title, updatedAt`, ordered by `updatedAt desc`.
-- `GET /api/chats/[id]` — load one. Verify `chat.userId === session.userId`, else 404.
-- `DELETE /api/chats/[id]` — delete, verify owner.
-- Modify `POST /api/chat/+server.ts`:
-  - Accept `{ chatId, messages }` in body.
-  - `requireAuth()`, verify chat owner.
-  - `streamText({ ..., onFinish: ({ response }) => updateChat(chatId, [...messages, ...response.messages]) })`.
-  - Bump `updatedAt`.
-- Auth: `requireAuth()` on every endpoint.
+Use SvelteKit server load functions and form actions where possible. Only the streaming chat endpoint stays as an API route.
+
+**`src/routes/+layout.server.ts`**
+
+- `load` — fetch current user's non-archived chats (`id, title, updatedAt`) ordered by `updatedAt desc`. Pass to sidebar. Redirect unauthenticated → `/login`.
+- `actions.deleteChat` — delete chat by id, verify owner.
+
+**`src/routes/+page.server.ts`** (root — "new chat" screen)
+
+- `actions.createChat` — body `{ targetLanguage }`. Insert row, return `{ id }`. On success, redirect to `/chat/[id]`.
+
+**`src/routes/chat/[id]/+page.server.ts`**
+
+- `load` — fetch chat by id, verify `chat.userId === session.userId`, else 404. Return `{ chat }` with full messages.
+
+**`src/routes/api/chat/+server.ts`** (stays as API route — streaming requires it)
+
+- Accept `{ chatId, messages }`.
+- `requireAuth()`, verify chat owner.
+- `streamText({ ..., onFinish: ({ response }) => updateChat(chatId, allMessages) })`.
 
 ## Phase 4 — Routes + client
 
-- New route `/chat/[id]/+page.svelte`:
-  - `+page.server.ts` load — fetch chat by id, ownership check, return initial `messages`.
-  - Hydrate `Chat` from `@ai-sdk/svelte` with `id: chatId` + `initialMessages`.
-- Root `+page.svelte`:
+- New route `src/routes/chat/[id]/+page.svelte`:
+  - Hydrate `Chat` from `@ai-sdk/svelte` with `id: chatId` + `initialMessages` from load.
+- Root `src/routes/+page.svelte`:
   - Strip all `localStorage` code.
-  - Render "new chat" form (language select) → POST `/api/chats` → navigate `/chat/[id]`.
-- Sidebar:
-  - Server-load chat list in root layout, pass to sidebar.
-  - Each entry = link + delete button (confirm dialog).
+  - Render "new chat" form (language select) → submit → `createChat` action → redirect `/chat/[id]`.
+- Sidebar (`src/lib/components/app-sidebar.svelte`):
+  - Receive chat list from layout load data.
+  - Each entry = link + delete form using `deleteChat` action.
 
 ## Phase 5 — Auth gate
 
-- `requireAuth()` on all new `/api/chats*` endpoints.
-- Gate `/chat/*` via `+layout.server.ts` (redirect unauth → login).
+- Root layout `load` handles redirect for all routes — single auth check covers everything.
 
 ## Schema sketch
 

@@ -13,7 +13,9 @@ AI-powered language tutoring app. Users chat with an AI tutor that corrects mist
 Svelte 5 runes (`$state`, `$derived`, `$effect`) are used throughout.
 Use `SvelteMap` and `SvelteSet` over vanilla JS `Map` and `Set`.
 
-In a page or component there must be a strict hierarchy from top to bottom:
+- In a page or component there must be a strict hierarchy from top to bottom:
+  — explicit `interface Props` + `$props()` destructure. Callbacks as props with `on` prefix (`oncancel`, `ondone`). No `createEventDispatcher`.
+- **State-Management**: Use stores over prop drilling when props pass through more than one intermediate component. Use class-based singletons using `$state` and `$derived`.
 
 1. defining interfaces and types
 2. props
@@ -21,6 +23,13 @@ In a page or component there must be a strict hierarchy from top to bottom:
 4. `$derived` runes
 5. `$effect` runes
 6. functions
+
+### State Management
+
+- `appStore` — navigation/routing state only (active space, active note, spaces tree)
+- Domain stores — separate class-based singletons per domain (`noteStore`, `todoStore`)
+- Use stores over prop drilling when props pass through more than one intermediate component
+- Local `$state` when state is used only within one component
 
 ### UI Components
 
