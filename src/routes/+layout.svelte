@@ -38,8 +38,6 @@
 			return;
 		}
 	});
-
-	const isPublic = $derived(PUBLIC_ROUTES.includes(page.url.pathname));
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -50,7 +48,7 @@
 	</main>
 {:else}
 	<div>
-		{#if !isPublic}
+		{#if !isPublicRoute}
 			<Sidebar.Provider>
 				<AppSidebar />
 				<main class="h-full w-full">

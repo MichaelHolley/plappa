@@ -9,14 +9,14 @@
 
 	const session = authClient.useSession();
 
-	const chats: chat[] = [];
+	let chats = $state<chat[]>([]);
+
+	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
 
 	async function logout() {
 		await authClient.signOut();
 		goto(resolve('/login'));
 	}
-
-	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
 </script>
 
 <Sidebar.Root>
