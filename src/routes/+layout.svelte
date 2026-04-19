@@ -51,9 +51,13 @@
 		{#if !isPublicRoute}
 			<Sidebar.Provider>
 				<AppSidebar />
-				<main class="h-full w-full">
-					<Sidebar.Trigger />
-					{@render children()}
+				<main class="flex h-svh w-full flex-col">
+					<div class="shrink-0">
+						<Sidebar.Trigger />
+					</div>
+					<div class="min-h-0 flex-1">
+						{@render children()}
+					</div>
 				</main>
 			</Sidebar.Provider>
 		{:else}
