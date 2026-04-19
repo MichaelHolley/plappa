@@ -29,3 +29,7 @@ In a page or component there must be a strict hierarchy from top to bottom:
 - `cn()` utility (clsx + tailwind-merge) is in `src/lib/utils.ts`
 - Path alias `@/*` maps to `src/lib/*`
 - App related components live in `src/lib/components/` and a dedicated directory if a group is applicable. Use kebab-case.
+
+## Git
+
+Use conventional commit messages like 'feat:', 'fix:', 'chore:', ...
