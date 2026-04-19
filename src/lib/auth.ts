@@ -1,18 +1,13 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
-import * as schema from './auth-schema';
+import * as authSchema from './auth-schema';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { getRequestEvent } from '$app/server';
-import { BETTER_AUTH_URL, DATABASE_URL } from '$env/static/private';
-
-const db = drizzle(new Pool({ connectionString: DATABASE_URL }), {
-	schema
-});
+import { BETTER_AUTH_URL } from '$env/static/private';
+import { db } from './server/db';
 
 export const auth = betterAuth({
-	database: drizzleAdapter(db, { provider: 'pg', schema }),
+	database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
 	appName: 'Plappa',
 	baseURL: BETTER_AUTH_URL,
 	emailAndPassword: { enabled: true, requireEmailVerification: false, autoSignIn: true },
