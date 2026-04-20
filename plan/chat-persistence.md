@@ -62,7 +62,8 @@ Use SvelteKit server load functions and form actions where possible. Only the st
 
 - Accept `{ chatId, messages }`.
 - `requireAuth()`, verify chat owner.
-- `streamText({ ..., onFinish: ({ response }) => updateChat(chatId, allMessages) })`.
+- `streamText(...)` — no `onFinish` here.
+- Persist via `result.toUIMessageStreamResponse({ originalMessages: messages, onFinish({ messages }) })` — `onFinish` receives full updated `UIMessage[]` (original + response), write to DB.
 
 ## Phase 4 — Routes + client
 
