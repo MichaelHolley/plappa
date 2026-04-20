@@ -6,6 +6,8 @@ AI-powered language tutoring app. Users chat with an AI tutor that corrects mist
 
 **Stack**: SvelteKit + Svelte, TailwindCSS, shadcn-svelte, Better Auth, Drizzle ORM (PostgreSQL), Vercel AI SDK + OpenRouter, Svelte AI Elements
 
+Use bun for executing script and checks.
+
 ## Code conventions
 
 ### State & Reactivity

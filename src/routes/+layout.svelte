@@ -1,18 +1,19 @@
 <script lang="ts">
-	import './layout.css';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import favicon from '$lib/assets/favicon.svg';
 	import { authClient } from '$lib/auth-client';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
+	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import { Spinner } from '$lib/components/ui/spinner';
+	import { chatStore } from '$lib/stores/chat-store.svelte';
 	import { onMount } from 'svelte';
+	import './layout.css';
 
 	const PUBLIC_ROUTES = ['/login', '/signup'];
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	const session = authClient.useSession();
 
@@ -23,6 +24,10 @@
 			authClient.signOut();
 			return;
 		}
+	});
+
+	$effect(() => {
+		chatStore.setChats(data.chats);
 	});
 
 	$effect(() => {

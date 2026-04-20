@@ -1,56 +1,28 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { Message, MessageContent, MessageResponse } from '$lib/components/ai-elements/message';
-	import type { Message as PromptMessage } from '$lib/components/ai-elements/prompt-input';
-	import * as PromptInput from '$lib/components/ai-elements/prompt-input';
-	import {
-		ChatContainerContent,
-		ChatContainerRoot
-	} from '$lib/components/prompt-kit/chat-container';
-	import { Chat } from '@ai-sdk/svelte';
-
-	const CHAT_ID = 'plappa-main-chat';
-
-	const savedMessages = browser ? JSON.parse(localStorage.getItem(CHAT_ID) ?? 'null') : null;
-
-	const chat = new Chat({
-		id: CHAT_ID,
-		messages: savedMessages ?? [],
-		onFinish() {
-			localStorage.setItem(CHAT_ID, JSON.stringify(chat.messages));
-		}
-	});
-
-	function handleSubmit(message: PromptMessage) {
-		chat.sendMessage({ text: message.text });
-	}
+	import { enhance } from '$app/forms';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 </script>
 
-<div class="mx-auto flex h-full max-w-2xl flex-col space-y-3 p-2 pb-8">
-	<ChatContainerRoot class="flex-1 flex-col">
-		<ChatContainerContent class="space-y-4 pr-1">
-			{#each chat.messages as message (message.id)}
-				<Message from={message.role}>
-					<MessageContent>
-						{#each message.parts as msgPart, partIndex (partIndex)}
-							{#if msgPart.type === 'text'}
-								<MessageResponse content={msgPart.text} class="**:my-3" />
-							{/if}
-						{/each}
-					</MessageContent>
-				</Message>
-			{/each}
-		</ChatContainerContent>
-	</ChatContainerRoot>
+<div class="flex h-full items-center justify-center">
+	<div class="w-full max-w-sm space-y-6">
+		<div class="space-y-1 text-center">
+			<h1 class="text-2xl font-semibold">Start a new chat</h1>
+			<p class="text-sm text-muted-foreground">Choose the language you want to practice</p>
+		</div>
 
-	<div>
-		<PromptInput.Root onSubmit={handleSubmit}>
-			<PromptInput.Body>
-				<PromptInput.Textarea />
-			</PromptInput.Body>
-			<PromptInput.Toolbar class="justify-end">
-				<PromptInput.Submit />
-			</PromptInput.Toolbar>
-		</PromptInput.Root>
+		<form method="POST" action="?/createChat" use:enhance class="space-y-4">
+			<div class="space-y-2">
+				<Label for="targetLanguage">Target language</Label>
+				<Input
+					id="targetLanguage"
+					name="targetLanguage"
+					placeholder="e.g. Spanish, French, Japanese"
+					required
+				/>
+			</div>
+			<Button type="submit" class="w-full">Start chatting</Button>
+		</form>
 	</div>
 </div>

@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import type { ChatSummary } from '$lib/types';
+	import { chatStore } from '$lib/stores/chat-store.svelte';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import TrashIcon from '@lucide/svelte/icons/trash-2';
+	import ChatIcon from '@lucide/svelte/icons/message-square-text';
 
 	const session = authClient.useSession();
-
-	let chats = $state<ChatSummary[]>([]);
-
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
 
 	async function logout() {
@@ -40,15 +40,36 @@
 			<Sidebar.GroupLabel>Chats</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
-					{#each chats as chat (chat.id)}
+					{#each chatStore.chats as chat (chat.id)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton>
 								{#snippet child({ props })}
-									<a href={resolve('/')} {...props}>
+									<a href={resolve(`/chat/${chat.id}`)} {...props}>
+										<ChatIcon />
 										<span>{chat.title}</span>
 									</a>
 								{/snippet}
 							</Sidebar.MenuButton>
+							<Sidebar.MenuAction>
+								<form
+									method="POST"
+									action="/?/deleteChat"
+									use:enhance={() =>
+										async ({ result, update }) => {
+											await update();
+											if (result.type === 'success') goto(resolve('/'));
+										}}
+								>
+									<input type="hidden" name="id" value={chat.id} />
+									<button
+										type="submit"
+										class="ml-auto p-1 text-muted-foreground opacity-0 group-hover/menu-item:opacity-100 hover:text-destructive"
+										aria-label="Delete chat"
+									>
+										<TrashIcon class="size-3.5" />
+									</button>
+								</form>
+							</Sidebar.MenuAction>
 						</Sidebar.MenuItem>
 					{/each}
 				</Sidebar.Menu>

@@ -15,7 +15,7 @@ export const actions = {
 
 		const [newChat] = await db
 			.insert(chat)
-			.values({ userId: user.id, targetLanguage })
+			.values({ userId: user.id, targetLanguage, title: targetLanguage })
 			.returning({ id: chat.id });
 
 		throw redirect(302, `/chat/${newChat.id}`);
