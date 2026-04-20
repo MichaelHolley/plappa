@@ -10,6 +10,10 @@ Use bun for executing script and checks.
 
 ## Code conventions
 
+### Authentication
+
+Use `requireAuth` to secure endpoint and server actions.
+
 ### State & Reactivity
 
 Svelte 5 runes (`$state`, `$derived`, `$effect`) are used throughout.
