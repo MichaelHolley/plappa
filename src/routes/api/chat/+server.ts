@@ -39,7 +39,7 @@ export async function POST({ request }) {
 			await db
 				.update(chat)
 				.set({ messages: [...messages], updatedAt: new Date() })
-				.where(eq(chat.id, chatId));
+				.where(and(eq(chat.id, chatId), eq(chat.userId, user.id)));
 		}
 	});
 }
