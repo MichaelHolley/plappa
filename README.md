@@ -1,42 +1,60 @@
-# sv
+# Plappa
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+AI-powered language tutor that guides beginners through real conversation scenarios, corrects mistakes inline, and tracks progress over time.
 
-## Creating a project
+## Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Frontend**: SvelteKit + Svelte 5 + Tailwind CSS v4 + shadcn-svelte
+- **AI**: OpenRouter via Vercel AI SDK (`deepseek/deepseek-v3-2` by default)
+- **Auth**: Better Auth (email + password)
+- **DB**: Drizzle ORM + PostgreSQL 17 (Docker)
 
-```sh
-# create a new project
-npx sv create my-app
+## Getting Started
+
+**1. Start the database**
+
+```bash
+docker compose up -d
 ```
 
-To recreate this project with the same configuration:
+**2. Install dependencies**
 
-```sh
-# recreate this project
-bun x sv@0.15.1 create --template minimal --types ts --add prettier eslint tailwindcss="plugins:none" --install bun plappa
+```bash
+bun install
 ```
 
-## Developing
+**3. Configure environment**
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+cp .env.example .env
 ```
 
-## Building
+Fill in:
 
-To create a production version of your app:
-
-```sh
-npm run build
+```env
+DB_URL=postgres://plappa:plappa@localhost:5432/plappa
+OPENROUTER_API_KEY=your_key
+OPENROUTER_MODEL_NAME=deepseek/deepseek-v3.2
+BETTER_AUTH_SECRET=your_secret
+BETTER_AUTH_URL=http://localhost:5173
 ```
 
-You can preview the production build with `npm run preview`.
+**4. Run migrations**
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+bunx drizzle-kit migrate
+```
+
+**5. Start dev server**
+
+```bash
+bun dev
+```
+
+## How It Works
+
+1. User signs up and selects a target language
+2. New chat is created, locked to that language
+3. AI tutor drives conversation via scenario, corrects mistakes inline
+4. Messages persisted to Postgres as JSONB on stream completion
+5. Chat history accessible from sidebar
