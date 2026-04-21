@@ -8,7 +8,31 @@
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-	import ChatIcon from '@lucide/svelte/icons/message-square-text';
+
+	const LANGUAGE_FLAGS: Record<string, string> = {
+		arabic: '🇸🇦',
+		chinese: '🇨🇳',
+		dutch: '🇳🇱',
+		french: '🇫🇷',
+		german: '🇩🇪',
+		greek: '🇬🇷',
+		hindi: '🇮🇳',
+		italian: '🇮🇹',
+		japanese: '🇯🇵',
+		korean: '🇰🇷',
+		mandarin: '🇨🇳',
+		polish: '🇵🇱',
+		portuguese: '🇵🇹',
+		russian: '🇷🇺',
+		spanish: '🇪🇸',
+		swedish: '🇸🇪',
+		turkish: '🇹🇷',
+		ukrainian: '🇺🇦'
+	};
+
+	function languageFlag(lang: string): string {
+		return LANGUAGE_FLAGS[lang.toLowerCase()] ?? '🌐';
+	}
 
 	const session = authClient.useSession();
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
@@ -20,6 +44,17 @@
 </script>
 
 <Sidebar.Root>
+	<Sidebar.Header>
+		<div class="flex items-center gap-2 px-2 py-1">
+			<div
+				class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-500 text-sm font-bold text-white"
+			>
+				P
+			</div>
+			<span class="text-base font-semibold">Plappa</span>
+		</div>
+	</Sidebar.Header>
+
 	<Sidebar.Content>
 		<Sidebar.Group>
 			<Sidebar.Menu>
@@ -42,11 +77,10 @@
 				<Sidebar.Menu>
 					{#each chatStore.chats as chat (chat.id)}
 						<Sidebar.MenuItem>
-							<Sidebar.MenuButton>
+							<Sidebar.MenuButton isActive={chatStore.currentChatId === chat.id}>
 								{#snippet child({ props })}
 									<a href={resolve(`/chat/${chat.id}`)} {...props}>
-										<ChatIcon />
-										<span>{chat.title}</span>
+										<span>{languageFlag(chat.targetLanguage)} {chat.title}</span>
 									</a>
 								{/snippet}
 							</Sidebar.MenuButton>

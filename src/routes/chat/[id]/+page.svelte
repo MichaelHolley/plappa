@@ -6,6 +6,7 @@
 		ChatContainerContent,
 		ChatContainerRoot
 	} from '$lib/components/prompt-kit/chat-container';
+	import { chatStore } from '$lib/stores/chat-store.svelte.js';
 	import { Chat } from '@ai-sdk/svelte';
 	import { DefaultChatTransport } from 'ai';
 
@@ -24,6 +25,10 @@
 		})
 	);
 
+	$effect(() => {
+		chatStore.setCurrentChatId(data.chat.id);
+	});
+
 	function handleSubmit(message: PromptMessage) {
 		chat.sendMessage({ text: message.text });
 	}
@@ -37,7 +42,10 @@
 					<MessageContent>
 						{#each message.parts as msgPart, partIndex (partIndex)}
 							{#if msgPart.type === 'text'}
-								<MessageResponse content={msgPart.text} class="**:my-3" />
+								<MessageResponse
+									content={msgPart.text}
+									class="**:my-3 {message.role === 'user' ? '**:text-white' : ''}"
+								/>
 							{/if}
 						{/each}
 					</MessageContent>
