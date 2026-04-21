@@ -8,22 +8,20 @@
 	} from '$lib/components/prompt-kit/chat-container';
 	import { Chat } from '@ai-sdk/svelte';
 	import { DefaultChatTransport } from 'ai';
-	import { untrack } from 'svelte';
 
 	let { data } = $props();
 
-	const chat = untrack(
-		() =>
-			new Chat({
-				id: data.chat.id,
-				messages: data.chat.messages,
-				transport: new DefaultChatTransport({
-					api: '/api/chat',
-					prepareSendMessagesRequest({ messages, id }) {
-						return { body: { message: messages[messages.length - 1], id } };
-					}
-				})
+	let chat = $derived(
+		new Chat({
+			id: data.chat.id,
+			messages: data.chat.messages,
+			transport: new DefaultChatTransport({
+				api: '/api/chat',
+				prepareSendMessagesRequest({ messages, id }) {
+					return { body: { message: messages[messages.length - 1], id } };
+				}
 			})
+		})
 	);
 
 	function handleSubmit(message: PromptMessage) {
