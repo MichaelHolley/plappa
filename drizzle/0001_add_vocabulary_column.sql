@@ -1,0 +1,1 @@
+ALTER TABLE "chat" ADD COLUMN "vocabulary" jsonb DEFAULT '[]'::jsonb NOT NULL;

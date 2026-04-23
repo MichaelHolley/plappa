@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import { boolean, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import type { UIMessage } from 'ai';
 import { user } from './auth-schema';
+import type { VocabEntry } from './types';
 
 export const chat = pgTable(
 	'chat',
@@ -13,6 +14,7 @@ export const chat = pgTable(
 		title: text('title').notNull().default('Untitled'),
 		targetLanguage: text('target_language').notNull(),
 		messages: jsonb('messages').$type<UIMessage[]>().notNull().default([]),
+		vocabulary: jsonb('vocabulary').$type<VocabEntry[]>().notNull().default([]),
 		archived: boolean('archived').notNull().default(false),
 		createdAt: timestamp('created_at').notNull().defaultNow(),
 		updatedAt: timestamp('updated_at')
