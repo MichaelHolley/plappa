@@ -57,8 +57,9 @@
 			<Sidebar.Provider>
 				<AppSidebar />
 				<main class="flex h-svh w-full flex-col">
-					<div class="shrink-0">
+					<div class="flex shrink-0 flex-row items-center space-x-3 border-b py-2">
 						<Sidebar.Trigger />
+						<h2>{chatStore.currentChat?.title}</h2>
 					</div>
 					<div class="min-h-0 flex-1">
 						{@render children()}

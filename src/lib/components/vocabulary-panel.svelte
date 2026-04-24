@@ -23,7 +23,7 @@
 			{#each entries as entry (entry.word)}
 				<div class="space-y-1 rounded-md border p-3">
 					<div class="flex flex-wrap items-center gap-2">
-						<span class="text-sm font-semibold">{entry.word}</span>
+						<span class="text-sm font-semibold text-primary">{entry.word}</span>
 						<span class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
 							{entry.partOfSpeech}
 						</span>
