@@ -102,7 +102,7 @@
 			<div>
 				<PromptInput.Root onSubmit={handleSubmit}>
 					<PromptInput.Body>
-						<PromptInput.Textarea />
+						<PromptInput.Textarea placeholder="Type your message..." />
 					</PromptInput.Body>
 					<PromptInput.Toolbar class="justify-end">
 						<PromptInput.Submit />
