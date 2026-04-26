@@ -16,6 +16,8 @@
 
 	let { data } = $props();
 
+	let vocabulary = $state<VocabEntry[]>(data.chat.vocabulary ?? []);
+
 	let chat = $derived(
 		new Chat({
 			id: data.chat.id,
@@ -33,7 +35,6 @@
 		chatStore.setCurrentChatId(data.chat.id);
 	});
 
-	let vocabulary = $state<VocabEntry[]>(data.chat.vocabulary ?? []);
 	const processedToolCallIds = new SvelteSet<string>();
 
 	// Reset on chat switch — data.chat changes when navigating between chats
