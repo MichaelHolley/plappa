@@ -33,17 +33,21 @@
 	});
 
 	let vocabulary = $state<VocabEntry[]>(data.chat.vocabulary ?? []);
-
-	// Pre-populate with tool call IDs already persisted in DB so we don't re-add them on load
 	const processedToolCallIds = new SvelteSet<string>();
-	for (const msg of data.chat.messages) {
-		if (msg.role !== 'assistant') continue;
-		for (const part of msg.parts ?? []) {
-			if (isToolUIPart(part)) {
-				processedToolCallIds.add(part.toolCallId);
+
+	// Reset on chat switch — data.chat changes when navigating between chats
+	$effect(() => {
+		vocabulary = data.chat.vocabulary ?? [];
+		processedToolCallIds.clear();
+		for (const msg of data.chat.messages) {
+			if (msg.role !== 'assistant') continue;
+			for (const part of msg.parts ?? []) {
+				if (isToolUIPart(part)) {
+					processedToolCallIds.add(part.toolCallId);
+				}
 			}
 		}
-	}
+	});
 
 	$effect(() => {
 		for (const message of chat.messages) {
