@@ -6,6 +6,7 @@
 		ChatContainerContent,
 		ChatContainerRoot
 	} from '$lib/components/prompt-kit/chat-container';
+	import VocabularyDrawer from '$lib/components/vocabulary-drawer.svelte';
 	import VocabularyPanel from '$lib/components/vocabulary-panel.svelte';
 	import { chatStore } from '$lib/stores/chat-store.svelte.js';
 	import type { VocabEntry } from '$lib/types';
@@ -75,6 +76,9 @@
 <div class="flex h-full">
 	<div class="flex min-w-0 flex-1 justify-center overflow-hidden">
 		<div class="flex h-full w-full max-w-2xl flex-col space-y-3 p-2 pb-8">
+			<div class="flex items-center justify-end md:hidden">
+				<VocabularyDrawer entries={vocabulary} />
+			</div>
 			<ChatContainerRoot class="flex-1 flex-col">
 				<ChatContainerContent class="space-y-4 pr-1">
 					{#each chat.messages as message (message.id)}
