@@ -1,7 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
-import { chat } from '$lib/chat-schema';
-import { and, desc, eq } from 'drizzle-orm';
+import { getUserChats } from '$lib/server/chat.service';
 
 const PUBLIC_ROUTES = ['/login', '/signup'];
 
@@ -12,16 +10,7 @@ export const load = async ({ locals, url }) => {
 
 	if (!locals.user) throw redirect(302, '/login');
 
-	const chats = await db
-		.select({
-			id: chat.id,
-			title: chat.title,
-			updatedAt: chat.updatedAt,
-			targetLanguage: chat.targetLanguage
-		})
-		.from(chat)
-		.where(and(eq(chat.userId, locals.user.id), eq(chat.archived, false)))
-		.orderBy(desc(chat.updatedAt));
+	const chats = await getUserChats(locals.user.id);
 
 	return { chats };
 };

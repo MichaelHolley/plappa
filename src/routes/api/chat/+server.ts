@@ -1,7 +1,11 @@
 import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME } from '$env/static/private';
 import { requireAuth } from '$lib/auth-validation.js';
-import { chat } from '$lib/chat-schema';
-import { db } from '$lib/server/db';
+import {
+	getChatMessages,
+	getChatVocabulary,
+	updateChatMessages,
+	updateChatVocabulary
+} from '$lib/server/chat.service';
 import type { VocabEntry } from '$lib/types';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { error } from '@sveltejs/kit';
@@ -13,7 +17,6 @@ import {
 	tool,
 	type UIMessage
 } from 'ai';
-import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { SystemPrompt } from './system-prompt';
 
@@ -24,10 +27,7 @@ export async function POST({ request }) {
 
 	const { id: chatId, message }: { id: string; message: UIMessage } = await request.json();
 
-	const [existing] = await db
-		.select({ messages: chat.messages, vocabulary: chat.vocabulary })
-		.from(chat)
-		.where(and(eq(chat.id, chatId), eq(chat.userId, user.id)));
+	const existing = await getChatMessages(chatId, user.id);
 
 	if (!existing) error(404, 'Chat not found');
 
@@ -50,10 +50,7 @@ export async function POST({ request }) {
 			const { words } = input;
 			if (words.length === 0) return { added: [] as VocabEntry[] };
 
-			const [current] = await db
-				.select({ vocabulary: chat.vocabulary })
-				.from(chat)
-				.where(and(eq(chat.id, chatId), eq(chat.userId, user.id)));
+			const current = await getChatVocabulary(chatId, user.id);
 
 			const existingWords = new Set((current?.vocabulary ?? []).map((e) => e.word.toLowerCase()));
 
@@ -62,10 +59,10 @@ export async function POST({ request }) {
 			);
 
 			if (newEntries.length > 0) {
-				await db
-					.update(chat)
-					.set({ vocabulary: [...(current?.vocabulary ?? []), ...newEntries] })
-					.where(and(eq(chat.id, chatId), eq(chat.userId, user.id)));
+				await updateChatVocabulary(chatId, user.id, [
+					...(current?.vocabulary ?? []),
+					...newEntries
+				]);
 			}
 
 			return { added: newEntries };
@@ -86,10 +83,7 @@ export async function POST({ request }) {
 		originalMessages: messages,
 		generateMessageId: createIdGenerator({ prefix: 'msg', size: 16 }),
 		async onFinish({ messages }) {
-			await db
-				.update(chat)
-				.set({ messages: [...messages], updatedAt: new Date() })
-				.where(and(eq(chat.id, chatId), eq(chat.userId, user.id)));
+			await updateChatMessages(chatId, user.id, messages);
 		}
 	});
 }

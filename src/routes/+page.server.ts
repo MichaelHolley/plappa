@@ -1,8 +1,6 @@
 import { requireAuth } from '$lib/auth-validation';
-import { chat } from '$lib/chat-schema';
-import { db } from '$lib/server/db';
+import { createChat, deleteChat } from '$lib/server/chat.service';
 import { fail, redirect } from '@sveltejs/kit';
-import { and, eq } from 'drizzle-orm';
 
 export const actions = {
 	createChat: async ({ request }) => {
@@ -13,10 +11,7 @@ export const actions = {
 
 		if (!targetLanguage) return fail(400, { error: 'targetLanguage required' });
 
-		const [newChat] = await db
-			.insert(chat)
-			.values({ userId: user.id, targetLanguage, title: targetLanguage })
-			.returning({ id: chat.id });
+		const newChat = await createChat(user.id, targetLanguage);
 
 		throw redirect(302, `/chat/${newChat.id}`);
 	},
@@ -29,7 +24,7 @@ export const actions = {
 
 		if (!id) return fail(400, { error: 'id required' });
 
-		await db.delete(chat).where(and(eq(chat.id, id), eq(chat.userId, user.id)));
+		await deleteChat(id, user.id);
 
 		return { success: true };
 	}
