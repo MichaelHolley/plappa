@@ -2,6 +2,8 @@
 
 AI-powered language tutor that guides beginners through real conversation scenarios, corrects mistakes inline, and tracks progress over time.
 
+<img width="1382" height="937" alt="2026-04-26_12-32-38 (1)" src="https://github.com/user-attachments/assets/0fecce08-f4a0-4c12-8ff5-5705ebe860f2" />
+
 ## Stack
 
 - **Frontend**: SvelteKit + Svelte 5 + Tailwind CSS v4 + shadcn-svelte
