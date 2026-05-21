@@ -8,6 +8,7 @@
 	} from '$lib/components/prompt-kit/chat-container';
 	import VocabularyDrawer from '$lib/components/vocabulary-drawer.svelte';
 	import VocabularyPanel from '$lib/components/vocabulary-panel.svelte';
+	import ChatWelcome from '$lib/components/chat-welcome.svelte';
 	import { chatStore } from '$lib/stores/chat-store.svelte.js';
 	import type { VocabEntry } from '$lib/types';
 	import { Chat } from '@ai-sdk/svelte';
@@ -82,6 +83,9 @@
 			</div>
 			<ChatContainerRoot class="flex-1 flex-col">
 				<ChatContainerContent class="space-y-4 pr-1">
+					{#if chat.messages.length === 0}
+						<ChatWelcome language={data.chat.targetLanguage} />
+					{/if}
 					{#each chat.messages as message (message.id)}
 						<Message from={message.role}>
 							<MessageContent>
