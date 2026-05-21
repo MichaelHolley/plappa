@@ -52,11 +52,3 @@ bun db:migrate
 ```bash
 bun dev
 ```
-
-## How It Works
-
-1. User signs up and selects a target language
-2. New chat is created, locked to that language
-3. AI tutor drives conversation via scenario, corrects mistakes inline
-4. Messages persisted to Postgres as JSONB on stream completion
-5. Chat history accessible from sidebar
