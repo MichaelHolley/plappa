@@ -44,7 +44,7 @@ BETTER_AUTH_URL=http://localhost:5173
 **4. Run migrations**
 
 ```bash
-bunx drizzle-kit migrate
+bun db:migrate
 ```
 
 **5. Start dev server**
