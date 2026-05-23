@@ -49,6 +49,11 @@ Use `SvelteMap` and `SvelteSet` over vanilla JS `Map` and `Set`.
 
 Use conventional commit messages like 'feat:', 'fix:', 'chore:', ...
 
+## Feedback Loop
+
+Use `package.json` scripts over `bunx` and `npx` commands.
+Validate your changes with `bun run check`.
+
 ---
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
