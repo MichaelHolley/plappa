@@ -73,6 +73,10 @@
 	function handleSubmit(message: PromptMessage) {
 		chat.sendMessage({ text: message.text });
 	}
+
+	function handleWelcomeSend(text: string) {
+		chat.sendMessage({ text });
+	}
 </script>
 
 <div class="flex h-full">
@@ -84,7 +88,7 @@
 			<ChatContainerRoot class="flex-1 flex-col">
 				<ChatContainerContent class="space-y-4 pr-1">
 					{#if chat.messages.length === 0}
-						<ChatWelcome language={data.chat.targetLanguage} />
+						<ChatWelcome language={data.chat.targetLanguage} onsend={handleWelcomeSend} />
 					{/if}
 					{#each chat.messages as message (message.id)}
 						<Message from={message.role}>
