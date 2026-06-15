@@ -11,7 +11,7 @@ import {
 	streamText,
 	type UIMessage
 } from 'ai';
-import { SystemPrompt } from './system-prompt';
+import { buildSystemPrompt } from './system-prompt';
 
 const openrouter = createOpenRouter({ apiKey: OPENROUTER_API_KEY });
 
@@ -30,7 +30,7 @@ export async function POST({ request }) {
 
 	const result = streamText({
 		model: openrouter.chat(OPENROUTER_MODEL_NAME),
-		system: SystemPrompt,
+		system: buildSystemPrompt({ targetLanguage: existing.targetLanguage }),
 		messages: await convertToModelMessages(messages),
 		tools,
 		stopWhen: stepCountIs(2)

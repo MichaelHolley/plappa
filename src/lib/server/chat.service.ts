@@ -27,7 +27,7 @@ export async function getChatById(chatId: string, userId: string) {
 
 export async function getChatMessages(chatId: string, userId: string) {
 	const [result] = await db
-		.select({ messages: chat.messages, vocabulary: chat.vocabulary })
+		.select({ messages: chat.messages, vocabulary: chat.vocabulary, targetLanguage: chat.targetLanguage })
 		.from(chat)
 		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
 	return result ?? null;
