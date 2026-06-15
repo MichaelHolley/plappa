@@ -4,35 +4,11 @@
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import { getLanguageFlag } from '$lib/languages';
 	import { chatStore } from '$lib/stores/chat-store.svelte';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
-
-	const LANGUAGE_FLAGS: Record<string, string> = {
-		arabic: '🇸🇦',
-		chinese: '🇨🇳',
-		dutch: '🇳🇱',
-		french: '🇫🇷',
-		german: '🇩🇪',
-		greek: '🇬🇷',
-		hindi: '🇮🇳',
-		italian: '🇮🇹',
-		japanese: '🇯🇵',
-		korean: '🇰🇷',
-		mandarin: '🇨🇳',
-		polish: '🇵🇱',
-		portuguese: '🇵🇹',
-		russian: '🇷🇺',
-		spanish: '🇪🇸',
-		swedish: '🇸🇪',
-		turkish: '🇹🇷',
-		ukrainian: '🇺🇦'
-	};
-
-	function languageFlag(lang: string): string {
-		return LANGUAGE_FLAGS[lang.toLowerCase()] ?? '🌐';
-	}
 
 	const session = authClient.useSession();
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
@@ -80,7 +56,7 @@
 							<Sidebar.MenuButton isActive={chatStore.currentChatId === chat.id}>
 								{#snippet child({ props })}
 									<a href={resolve(`/chat/${chat.id}`)} {...props}>
-										<span>{languageFlag(chat.targetLanguage)} {chat.title}</span>
+										<span>{getLanguageFlag(chat.targetLanguage)} {chat.title}</span>
 									</a>
 								{/snippet}
 							</Sidebar.MenuButton>
