@@ -27,7 +27,11 @@ export async function getChatById(chatId: string, userId: string) {
 
 export async function getChatMessages(chatId: string, userId: string) {
 	const [result] = await db
-		.select({ messages: chat.messages, vocabulary: chat.vocabulary, targetLanguage: chat.targetLanguage })
+		.select({
+			messages: chat.messages,
+			vocabulary: chat.vocabulary,
+			targetLanguage: chat.targetLanguage
+		})
 		.from(chat)
 		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
 	return result ?? null;
@@ -44,7 +48,7 @@ export async function getChatVocabulary(chatId: string, userId: string) {
 export async function createChat(userId: string, targetLanguage: string) {
 	const [newChat] = await db
 		.insert(chat)
-		.values({ userId, targetLanguage, title: targetLanguage })
+		.values({ userId, targetLanguage, title: `New ${targetLanguage} Chat` })
 		.returning({ id: chat.id });
 	return newChat;
 }
