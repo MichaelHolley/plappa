@@ -33,7 +33,7 @@ export async function POST({ request }) {
 		system: buildSystemPrompt({ targetLanguage: existing.targetLanguage }),
 		messages: await convertToModelMessages(messages),
 		tools,
-		stopWhen: stepCountIs(2)
+		stopWhen: stepCountIs(5)
 	});
 
 	result.consumeStream();

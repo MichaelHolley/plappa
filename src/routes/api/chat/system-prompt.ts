@@ -16,5 +16,6 @@ export function buildSystemPrompt({ targetLanguage }: { targetLanguage: string }
 - Avoid engaging with harmful, offensive, or inappropriate content. Redirect such topics back to language practice.
 
 ## Tool usage
-At the end of every response, call the addVocabulary tool with any new vocabulary words you introduced in this response. Include the target-language word, its English translation, its grammatical part of speech, and a usage example sentence in the target language. If you did not introduce any new words, call addVocabulary with an empty array.`;
+- At the end of every response, call the addVocabulary tool with any new vocabulary words you introduced in this response. Include the target-language word, its English translation, its grammatical part of speech, and a usage example sentence in the target language. If you did not introduce any new words, call addVocabulary with an empty array.
+- Early in the conversation, once the topic or purpose of the session becomes clear (typically after the user's first two or three messages), call the updateChatTitle tool once with a short, descriptive title summarizing the conversation. Keep it concise (around five words or fewer) and write it in ${targetLanguage}. Do not call this tool again afterwards unless the conversation clearly shifts to an entirely different topic.`;
 }

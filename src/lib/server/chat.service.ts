@@ -64,6 +64,13 @@ export async function updateChatMessages(chatId: string, userId: string, message
 		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
 }
 
+export async function updateChatTitle(chatId: string, userId: string, title: string) {
+	await db
+		.update(chat)
+		.set({ title })
+		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
+}
+
 export async function updateChatVocabulary(
 	chatId: string,
 	userId: string,
