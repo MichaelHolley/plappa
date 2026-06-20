@@ -55,7 +55,7 @@
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton isActive={chatStore.currentChatId === chat.id}>
 								{#snippet child({ props })}
-									<a href={resolve(`/chat/${chat.id}`)} {...props}>
+									<a href={resolve(`/chat/${chat.id}`)} {...props} title={chat.title}>
 										<span>{getLanguageFlag(chat.targetLanguage)} {chat.title}</span>
 									</a>
 								{/snippet}
