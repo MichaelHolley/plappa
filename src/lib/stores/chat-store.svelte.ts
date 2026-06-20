@@ -20,6 +20,10 @@ class ChatStore {
 		this.chats = this.chats.filter((c) => c.id !== id);
 	}
 
+	updateChatTitle(id: string, title: string) {
+		this.chats = this.chats.map((c) => (c.id === id ? { ...c, title } : c));
+	}
+
 	setCurrentChatId(id: string | null) {
 		this.currentChatId = id;
 	}

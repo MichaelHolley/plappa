@@ -57,14 +57,23 @@
 			if (message.role !== 'assistant') continue;
 			for (const part of message.parts ?? []) {
 				// AI SDK v6: tool parts have type `tool-${name}`, flat toolCallId/state/output
-				if (!isToolUIPart(part) || part.type !== 'tool-addVocabulary') continue;
+				if (!isToolUIPart(part)) continue;
 				const toolCallId = part.toolCallId;
 				const state = (part as { state: string }).state;
 				if (state !== 'output-available' || processedToolCallIds.has(toolCallId)) continue;
-				processedToolCallIds.add(toolCallId);
-				const output = (part as { output?: { added: VocabEntry[] } }).output;
-				if (output?.added?.length) {
-					vocabulary = [...vocabulary, ...output.added];
+
+				if (part.type === 'tool-addVocabulary') {
+					processedToolCallIds.add(toolCallId);
+					const output = (part as { output?: { added: VocabEntry[] } }).output;
+					if (output?.added?.length) {
+						vocabulary = [...vocabulary, ...output.added];
+					}
+				} else if (part.type === 'tool-updateChatTitle') {
+					processedToolCallIds.add(toolCallId);
+					const output = (part as { output?: { title: string } }).output;
+					if (output?.title) {
+						chatStore.updateChatTitle(data.chat.id, output.title);
+					}
 				}
 			}
 		}
