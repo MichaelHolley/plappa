@@ -1,152 +1,47 @@
 <script lang="ts">
-	import { Message, MessageContent, MessageResponse } from '$lib/components/ai-elements/message';
-	import type { Message as PromptMessage } from '$lib/components/ai-elements/prompt-input';
-	import * as PromptInput from '$lib/components/ai-elements/prompt-input';
-	import {
-		ChatContainerContent,
-		ChatContainerRoot
-	} from '$lib/components/prompt-kit/chat-container';
+	import { ChatSession } from '$lib/components/chat/chat-session.svelte.js';
+	import ChatInput from '$lib/components/chat/chat-input.svelte';
+	import ChatMessageList from '$lib/components/chat/chat-message-list.svelte';
 	import VocabularyDrawer from '$lib/components/vocabulary-drawer.svelte';
 	import VocabularyPanel from '$lib/components/vocabulary-panel.svelte';
-	import ChatWelcome from '$lib/components/chat-welcome.svelte';
-	import ChatTypingIndicator from '$lib/components/chat-typing-indicator.svelte';
 	import { chatStore } from '$lib/stores/chat-store.svelte.js';
-	import type { VocabEntry } from '$lib/types';
-	import { Chat } from '@ai-sdk/svelte';
-	import { DefaultChatTransport, isToolUIPart } from 'ai';
-	import { SvelteSet } from 'svelte/reactivity';
 
 	let { data } = $props();
 
-	let vocabulary = $state<VocabEntry[]>([]);
-
-	let chat = $derived(
-		new Chat({
-			id: data.chat.id,
-			messages: data.chat.messages,
-			transport: new DefaultChatTransport({
-				api: '/api/chat',
-				prepareSendMessagesRequest({ messages, id }) {
-					return { body: { message: messages[messages.length - 1], id } };
-				}
-			})
-		})
-	);
+	// Re-created on navigation between chats (data.chat changes).
+	let session = $derived(new ChatSession(data.chat));
 
 	$effect(() => {
 		chatStore.setCurrentChatId(data.chat.id);
 	});
 
-	const processedToolCallIds = new SvelteSet<string>();
-
-	// Reset on chat switch — data.chat changes when navigating between chats
 	$effect(() => {
-		vocabulary = data.chat.vocabulary ?? [];
-		processedToolCallIds.clear();
-		for (const msg of data.chat.messages) {
-			if (msg.role !== 'assistant') continue;
-			for (const part of msg.parts ?? []) {
-				if (isToolUIPart(part)) {
-					processedToolCallIds.add(part.toolCallId);
-				}
-			}
-		}
+		session.processToolCalls();
 	});
-
-	$effect(() => {
-		for (const message of chat.messages) {
-			if (message.role !== 'assistant') continue;
-			for (const part of message.parts ?? []) {
-				// AI SDK v6: tool parts have type `tool-${name}`, flat toolCallId/state/output
-				if (!isToolUIPart(part)) continue;
-				const toolCallId = part.toolCallId;
-				const state = (part as { state: string }).state;
-				if (state !== 'output-available' || processedToolCallIds.has(toolCallId)) continue;
-
-				if (part.type === 'tool-addVocabulary') {
-					processedToolCallIds.add(toolCallId);
-					const output = (part as { output?: { added: VocabEntry[] } }).output;
-					if (output?.added?.length) {
-						vocabulary = [...vocabulary, ...output.added];
-					}
-				} else if (part.type === 'tool-updateChatTitle') {
-					processedToolCallIds.add(toolCallId);
-					const output = (part as { output?: { title: string } }).output;
-					if (output?.title) {
-						chatStore.updateChatTitle(data.chat.id, output.title);
-					}
-				}
-			}
-		}
-	});
-
-	let isResponding = $derived(chat.status === 'submitted' || chat.status === 'streaming');
-
-	// Show the typing indicator after sending and until the first assistant token arrives.
-	let showTypingIndicator = $derived.by(() => {
-		if (!isResponding) return false;
-		const last = chat.messages[chat.messages.length - 1];
-		if (last?.role !== 'assistant') return true;
-		return !(last.parts ?? []).some((part) => part.type === 'text' && part.text.trim().length > 0);
-	});
-
-	function handleSubmit(message: PromptMessage) {
-		if (isResponding) return;
-		chat.sendMessage({ text: message.text });
-	}
-
-	function handleWelcomeSend(text: string) {
-		if (isResponding) return;
-		chat.sendMessage({ text });
-	}
 </script>
 
 <div class="flex h-full">
 	<div class="flex min-w-0 flex-1 justify-center overflow-hidden">
 		<div class="flex h-full w-full max-w-2xl flex-col space-y-3 p-2 pb-3">
 			<div class="flex items-center justify-end lg:hidden">
-				<VocabularyDrawer entries={vocabulary} />
+				<VocabularyDrawer entries={session.vocabulary} />
 			</div>
-			<ChatContainerRoot class="flex-1 flex-col">
-				<ChatContainerContent class="space-y-4 pr-1">
-					{#if chat.messages.length === 0}
-						<ChatWelcome language={data.chat.targetLanguage} onsend={handleWelcomeSend} />
-					{/if}
-					{#each chat.messages as message (message.id)}
-						<Message from={message.role}>
-							<MessageContent>
-								{#each message.parts as msgPart, partIndex (partIndex)}
-									{#if msgPart.type === 'text'}
-										<MessageResponse
-											content={msgPart.text}
-											class="**:my-3 {message.role === 'user' ? '**:text-white' : ''}"
-										/>
-									{/if}
-								{/each}
-							</MessageContent>
-						</Message>
-					{/each}
-					{#if showTypingIndicator}
-						<Message from="assistant">
-							<MessageContent>
-								<ChatTypingIndicator />
-							</MessageContent>
-						</Message>
-					{/if}
-				</ChatContainerContent>
-			</ChatContainerRoot>
+
+			<ChatMessageList
+				messages={session.chat.messages}
+				language={data.chat.targetLanguage}
+				showTyping={session.showTypingIndicator}
+				onwelcomesend={(text) => session.send(text)}
+			/>
 
 			<div>
-				<PromptInput.Root onSubmit={handleSubmit}>
-					<PromptInput.Body>
-						<PromptInput.Textarea placeholder="Type your message..." />
-					</PromptInput.Body>
-					<PromptInput.Toolbar class="justify-end">
-						<PromptInput.Submit status={chat.status} onStop={() => chat.stop()} />
-					</PromptInput.Toolbar>
-				</PromptInput.Root>
+				<ChatInput
+					status={session.chat.status}
+					onsubmit={(message) => session.send(message.text)}
+					onstop={() => session.stop()}
+				/>
 			</div>
 		</div>
 	</div>
-	<VocabularyPanel entries={vocabulary} class="hidden lg:flex" />
+	<VocabularyPanel entries={session.vocabulary} class="hidden lg:flex" />
 </div>
