@@ -15,7 +15,7 @@
 		onwelcomesend: (text: string) => void;
 	}
 
-	let { messages, language, showTyping, onwelcomesend }: Props = $props();
+	const { messages, language, showTyping, onwelcomesend }: Props = $props();
 </script>
 
 <ChatContainerRoot class="flex-1 flex-col">

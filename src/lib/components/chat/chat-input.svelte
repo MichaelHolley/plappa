@@ -9,7 +9,7 @@
 		onstop: () => void;
 	}
 
-	let { status, onsubmit, onstop }: Props = $props();
+	const { status, onsubmit, onstop }: Props = $props();
 </script>
 
 <PromptInput.Root onSubmit={onsubmit}>
