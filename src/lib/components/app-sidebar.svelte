@@ -4,14 +4,40 @@
 	import { resolve } from '$app/paths';
 	import { authClient } from '$lib/auth-client';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { getLanguageFlag } from '$lib/languages';
+	import { LANGUAGES } from '$lib/languages';
 	import { chatStore } from '$lib/stores/chat-store.svelte';
+	import type { ChatSummary } from '$lib/types';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
 
+	interface LanguageGroup {
+		language: string;
+		label: string;
+		flag: string;
+		chats: ChatSummary[];
+	}
+
 	const session = authClient.useSession();
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
+
+	const chatsByLanguage = $derived.by<LanguageGroup[]>(() => {
+		const map = new Map<string, LanguageGroup>();
+		for (const chat of chatStore.chats) {
+			const lang = chat.targetLanguage;
+			if (!map.has(lang)) {
+				const found = LANGUAGES.find((l) => l.value.toLowerCase() === lang.toLowerCase());
+				map.set(lang, {
+					language: lang,
+					label: found?.label ?? lang,
+					flag: found?.flag ?? '🌐',
+					chats: []
+				});
+			}
+			map.get(lang)!.chats.push(chat);
+		}
+		return Array.from(map.values()).sort((a, b) => b.chats.length - a.chats.length);
+	});
 
 	async function logout() {
 		await authClient.signOut();
@@ -47,44 +73,46 @@
 			</Sidebar.Menu>
 		</Sidebar.Group>
 
-		<Sidebar.Group>
-			<Sidebar.GroupLabel>Chats</Sidebar.GroupLabel>
-			<Sidebar.GroupContent>
-				<Sidebar.Menu>
-					{#each chatStore.chats as chat (chat.id)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton isActive={chatStore.currentChatId === chat.id}>
-								{#snippet child({ props })}
-									<a href={resolve(`/chat/${chat.id}`)} {...props} title={chat.title}>
-										<span>{getLanguageFlag(chat.targetLanguage)} {chat.title}</span>
-									</a>
-								{/snippet}
-							</Sidebar.MenuButton>
-							<Sidebar.MenuAction>
-								<form
-									method="POST"
-									action="/?/deleteChat"
-									use:enhance={() =>
-										async ({ result, update }) => {
-											await update();
-											if (result.type === 'success') goto(resolve('/'));
-										}}
-								>
-									<input type="hidden" name="id" value={chat.id} />
-									<button
-										type="submit"
-										class="ml-auto p-1 text-muted-foreground opacity-0 group-hover/menu-item:opacity-100 hover:text-destructive"
-										aria-label="Delete chat"
+		{#each chatsByLanguage as group (group.language)}
+			<Sidebar.Group>
+				<Sidebar.GroupLabel>{group.flag} {group.label}</Sidebar.GroupLabel>
+				<Sidebar.GroupContent>
+					<Sidebar.Menu>
+						{#each group.chats as chat (chat.id)}
+							<Sidebar.MenuItem>
+								<Sidebar.MenuButton isActive={chatStore.currentChatId === chat.id}>
+									{#snippet child({ props })}
+										<a href={resolve(`/chat/${chat.id}`)} {...props} title={chat.title}>
+											<span>{chat.title}</span>
+										</a>
+									{/snippet}
+								</Sidebar.MenuButton>
+								<Sidebar.MenuAction>
+									<form
+										method="POST"
+										action="/?/deleteChat"
+										use:enhance={() =>
+											async ({ result, update }) => {
+												await update();
+												if (result.type === 'success') goto(resolve('/'));
+											}}
 									>
-										<TrashIcon class="size-3.5" />
-									</button>
-								</form>
-							</Sidebar.MenuAction>
-						</Sidebar.MenuItem>
-					{/each}
-				</Sidebar.Menu>
-			</Sidebar.GroupContent>
-		</Sidebar.Group>
+										<input type="hidden" name="id" value={chat.id} />
+										<button
+											type="submit"
+											class="ml-auto p-1 text-muted-foreground opacity-0 group-hover/menu-item:opacity-100 hover:text-destructive"
+											aria-label="Delete chat"
+										>
+											<TrashIcon class="size-3.5" />
+										</button>
+									</form>
+								</Sidebar.MenuAction>
+							</Sidebar.MenuItem>
+						{/each}
+					</Sidebar.Menu>
+				</Sidebar.GroupContent>
+			</Sidebar.Group>
+		{/each}
 	</Sidebar.Content>
 
 	<Sidebar.Footer>
