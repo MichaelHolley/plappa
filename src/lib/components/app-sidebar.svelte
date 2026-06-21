@@ -7,6 +7,7 @@
 	import { LANGUAGES } from '$lib/languages';
 	import { chatStore } from '$lib/stores/chat-store.svelte';
 	import type { ChatSummary } from '$lib/types';
+	import { SvelteMap } from 'svelte/reactivity';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import TrashIcon from '@lucide/svelte/icons/trash-2';
@@ -22,7 +23,7 @@
 	const initial = $derived($session.data?.user.name?.charAt(0).toUpperCase() ?? '?');
 
 	const chatsByLanguage = $derived.by<LanguageGroup[]>(() => {
-		const map = new Map<string, LanguageGroup>();
+		const map = new SvelteMap<string, LanguageGroup>();
 		for (const chat of chatStore.chats) {
 			const lang = chat.targetLanguage;
 			if (!map.has(lang)) {
@@ -75,7 +76,10 @@
 
 		{#each chatsByLanguage as group (group.language)}
 			<Sidebar.Group>
-				<Sidebar.GroupLabel>{group.flag} {group.label}</Sidebar.GroupLabel>
+				<Sidebar.GroupLabel
+					><span class="mr-1.5 text-sidebar-foreground">{group.flag}</span
+					>{group.label}</Sidebar.GroupLabel
+				>
 				<Sidebar.GroupContent>
 					<Sidebar.Menu>
 						{#each group.chats as chat (chat.id)}
