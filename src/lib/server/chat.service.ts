@@ -17,6 +17,19 @@ export async function getUserChats(userId: string) {
 		.orderBy(desc(chat.updatedAt));
 }
 
+export async function getArchivedChats(userId: string) {
+	return db
+		.select({
+			id: chat.id,
+			title: chat.title,
+			updatedAt: chat.updatedAt,
+			targetLanguage: chat.targetLanguage
+		})
+		.from(chat)
+		.where(and(eq(chat.userId, userId), eq(chat.archived, true)))
+		.orderBy(desc(chat.updatedAt));
+}
+
 export async function getChatById(chatId: string, userId: string) {
 	const [result] = await db
 		.select()
@@ -68,6 +81,13 @@ export async function updateChatTitle(chatId: string, userId: string, title: str
 	await db
 		.update(chat)
 		.set({ title })
+		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
+}
+
+export async function setChatArchived(chatId: string, userId: string, archived: boolean) {
+	await db
+		.update(chat)
+		.set({ archived })
 		.where(and(eq(chat.id, chatId), eq(chat.userId, userId)));
 }
 

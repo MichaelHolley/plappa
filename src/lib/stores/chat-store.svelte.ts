@@ -2,6 +2,7 @@ import type { ChatSummary } from '$lib/types';
 
 class ChatStore {
 	chats = $state<ChatSummary[]>([]);
+	archivedChats = $state<ChatSummary[]>([]);
 	currentChatId = $state<string | null>(null);
 
 	get currentChat(): ChatSummary | null {
@@ -10,6 +11,10 @@ class ChatStore {
 
 	setChats(chats: ChatSummary[]) {
 		this.chats = chats;
+	}
+
+	setArchivedChats(chats: ChatSummary[]) {
+		this.archivedChats = chats;
 	}
 
 	addChat(chat: ChatSummary) {
@@ -22,6 +27,7 @@ class ChatStore {
 
 	updateChatTitle(id: string, title: string) {
 		this.chats = this.chats.map((c) => (c.id === id ? { ...c, title } : c));
+		this.archivedChats = this.archivedChats.map((c) => (c.id === id ? { ...c, title } : c));
 	}
 
 	setCurrentChatId(id: string | null) {

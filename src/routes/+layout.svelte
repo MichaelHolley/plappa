@@ -28,6 +28,7 @@
 
 	$effect(() => {
 		chatStore.setChats(data.chats);
+		chatStore.setArchivedChats(data.archivedChats);
 	});
 
 	$effect(() => {
