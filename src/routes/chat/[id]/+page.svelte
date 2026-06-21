@@ -17,7 +17,7 @@
 
 	let { data } = $props();
 
-	let vocabulary = $state<VocabEntry[]>(data.chat.vocabulary ?? []);
+	let vocabulary = $state<VocabEntry[]>([]);
 
 	let chat = $derived(
 		new Chat({
