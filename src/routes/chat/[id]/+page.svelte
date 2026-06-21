@@ -9,6 +9,7 @@
 	import VocabularyDrawer from '$lib/components/vocabulary-drawer.svelte';
 	import VocabularyPanel from '$lib/components/vocabulary-panel.svelte';
 	import ChatWelcome from '$lib/components/chat-welcome.svelte';
+	import ChatTypingIndicator from '$lib/components/chat-typing-indicator.svelte';
 	import { chatStore } from '$lib/stores/chat-store.svelte.js';
 	import type { VocabEntry } from '$lib/types';
 	import { Chat } from '@ai-sdk/svelte';
@@ -79,11 +80,23 @@
 		}
 	});
 
+	let isResponding = $derived(chat.status === 'submitted' || chat.status === 'streaming');
+
+	// Show the typing indicator after sending and until the first assistant token arrives.
+	let showTypingIndicator = $derived.by(() => {
+		if (!isResponding) return false;
+		const last = chat.messages[chat.messages.length - 1];
+		if (last?.role !== 'assistant') return true;
+		return !(last.parts ?? []).some((part) => part.type === 'text' && part.text.trim().length > 0);
+	});
+
 	function handleSubmit(message: PromptMessage) {
+		if (isResponding) return;
 		chat.sendMessage({ text: message.text });
 	}
 
 	function handleWelcomeSend(text: string) {
+		if (isResponding) return;
 		chat.sendMessage({ text });
 	}
 </script>
@@ -113,6 +126,13 @@
 							</MessageContent>
 						</Message>
 					{/each}
+					{#if showTypingIndicator}
+						<Message from="assistant">
+							<MessageContent>
+								<ChatTypingIndicator />
+							</MessageContent>
+						</Message>
+					{/if}
 				</ChatContainerContent>
 			</ChatContainerRoot>
 
@@ -122,7 +142,7 @@
 						<PromptInput.Textarea placeholder="Type your message..." />
 					</PromptInput.Body>
 					<PromptInput.Toolbar class="justify-end">
-						<PromptInput.Submit />
+						<PromptInput.Submit status={chat.status} onStop={() => chat.stop()} />
 					</PromptInput.Toolbar>
 				</PromptInput.Root>
 			</div>
