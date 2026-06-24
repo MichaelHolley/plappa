@@ -1,8 +1,4 @@
-export interface Language {
-	value: string;
-	label: string;
-	flag: string;
-}
+import type { Language } from '$lib/types';
 
 export const LANGUAGES: Language[] = [
 	{ value: 'Spanish', label: 'Spanish', flag: '🇪🇸' },

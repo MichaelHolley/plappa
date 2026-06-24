@@ -1,6 +1,14 @@
 import type { Chat } from './chat-schema';
 import { z } from 'zod';
 
+export const LanguageSchema = z.object({
+	value: z.string(),
+	label: z.string(),
+	flag: z.string()
+});
+
+export type Language = z.infer<typeof LanguageSchema>;
+
 export type ChatSummary = Pick<Chat, 'id' | 'title' | 'updatedAt' | 'targetLanguage'>;
 
 export const VocabEntrySchema = z.object({
