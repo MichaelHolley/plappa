@@ -6,7 +6,9 @@
 	} from '$lib/components/prompt-kit/chat-container';
 	import ChatWelcome from './chat-welcome.svelte';
 	import ChatTypingIndicator from './chat-typing-indicator.svelte';
+	import CorrectionCard from './correction-card.svelte';
 	import type { Chat } from '@ai-sdk/svelte';
+	import type { Correction } from '$lib/types';
 
 	interface Props {
 		messages: Chat['messages'];
@@ -32,6 +34,16 @@
 								content={msgPart.text}
 								class="**:my-3 {message.role === 'user' ? '**:text-white' : ''}"
 							/>
+						{:else if msgPart.type === 'tool-addCorrection'}
+							{@const toolPart = msgPart as { state: string; input?: Correction }}
+							{#if (toolPart.state === 'input-available' || toolPart.state === 'output-available') && toolPart.input}
+								<CorrectionCard
+									original={toolPart.input.original}
+									corrected={toolPart.input.corrected}
+									explanation={toolPart.input.explanation}
+									severity={toolPart.input.severity}
+								/>
+							{/if}
 						{/if}
 					{/each}
 				</MessageContent>

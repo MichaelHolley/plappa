@@ -1,5 +1,5 @@
 import { getChatVocabulary, updateChatTitle, updateChatVocabulary } from '$lib/server/chat.service';
-import { VocabEntrySchema, type VocabEntry } from '$lib/types';
+import { CorrectionSchema, VocabEntrySchema, type VocabEntry } from '$lib/types';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -44,5 +44,12 @@ export function createChatTools(chatId: string, userId: string) {
 		}
 	});
 
-	return { addVocabulary, updateChatTitle: updateTitle };
+	const addCorrection = tool({
+		description:
+			'Report a grammar or vocabulary mistake the user made. Call this once per distinct mistake, inline with your response, at the point where you address the correction.',
+		inputSchema: CorrectionSchema,
+		execute: async (input) => input
+	});
+
+	return { addVocabulary, updateChatTitle: updateTitle, addCorrection };
 }
