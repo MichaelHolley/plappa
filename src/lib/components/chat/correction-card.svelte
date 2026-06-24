@@ -9,20 +9,19 @@
 
 <div
 	class={cn(
-		'my-1 rounded-r-md border-l-4 bg-white px-3 py-2 text-sm dark:bg-zinc-900',
+		'my-1 rounded-r-md border-l-4 bg-white px-3 pb-1 text-sm dark:bg-zinc-900',
 		severity === 'minor' && 'border-amber-400',
 		severity === 'major' && 'border-rose-500',
 		!severity && 'border-zinc-300 dark:border-zinc-600'
 	)}
 >
-	<div class="mb-1 flex items-center gap-2">
+	<div class="mb-1">
 		<span
 			class={cn(
-				'rounded px-1.5 py-0.5 text-xs font-semibold tracking-wide uppercase',
-				severity === 'minor' &&
-					'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
-				severity === 'major' && 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400',
-				!severity && 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+				'text-[8px] font-medium tracking-widest uppercase',
+				severity === 'minor' && 'text-amber-500 dark:text-amber-400',
+				severity === 'major' && 'text-rose-500 dark:text-rose-400',
+				!severity && 'text-zinc-400 dark:text-zinc-600'
 			)}
 		>
 			Correction
