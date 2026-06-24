@@ -22,7 +22,7 @@
 
 <div class="flex h-full">
 	<div class="flex min-w-0 flex-1 justify-center overflow-hidden">
-		<div class="flex h-full w-full max-w-2xl flex-col space-y-3 p-2 pb-3">
+		<div class="flex h-full w-full max-w-3xl flex-col space-y-3 p-2 pb-3">
 			<div class="flex items-center justify-end lg:hidden">
 				<VocabularyDrawer entries={session.vocabulary} />
 			</div>
