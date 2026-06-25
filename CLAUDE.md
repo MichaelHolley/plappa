@@ -37,6 +37,10 @@ Use `SvelteMap` and `SvelteSet` over vanilla JS `Map` and `Set`.
 - Use stores over prop drilling when props pass through more than one intermediate component
 - Local `$state` when state is used only within one component
 
+### Types & Schemas
+
+App-wide types and Zod schemas live in `src/lib/types.ts`. Define schemas with Zod and derive TypeScript types from them with `z.infer`. Keep type definitions out of feature files — if a type is used in more than one place, or could be, it belongs in `types.ts`.
+
 ### UI Components
 
 - shadcn-svelte components live in `src/lib/components/ui/`
